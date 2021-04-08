@@ -1,0 +1,72 @@
+define('layoutcontrols/userCounter', function () {
+    'use strict';
+    return function (model) {
+        var countFormat = function (data) {
+            if (data === 0) {
+                return '0';
+            }
+
+            var newValue = ('' + data).replace(/^0$|[^\d\.]/g, '').replace('.', ',');
+            var matches = newValue.match(/(\d+[,]?\d{0,2})/g);
+
+            if (matches && matches.length > 0) {
+                newValue = matches[0];
+            }
+
+            return newValue.replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1 ');
+        };
+
+        var counterElement = document.querySelector(model.counterSelector),
+            link = model.link,
+            linkForEmpty = model.linkForEmpty,
+            spamLink = model.spamLink,
+            formatCounterValue = model.formatCounterValue,
+            counterZeroClass = model.counterZeroClass,
+            emptyValue = model.emptyValue,
+            counterContentClass = model.counterContentClass,
+            limitOverClass = 'button-with-counter__counter_limit-over',
+            updateCounterEventName = 'UpdateCounter';
+
+        if (!counterElement) {
+            return;
+        }
+
+        counterElement.addEventListener(updateCounterEventName, function (event) {
+            var count = event.detail.count,
+                newTitle = event.detail.newTitle,
+                noNewTitle = event.detail.noNewTitle,
+                limit = event.detail.limit,
+                spamOnly = event.detail.spamOnly,
+                counterContent = counterElement.querySelector('.' + counterContentClass);
+
+
+            if (count && parseInt(count) !== 0) {
+                if (counterZeroClass) {
+                    counterContent.classList.remove(counterZeroClass);
+                }
+
+                counterElement.setAttribute('href', spamLink && spamOnly ? model.spamLink : link);
+
+                 counterContent.style.display = 'block';
+
+                if (limit && count >= limit) {
+                    counterElement.classList.add(limitOverClass);
+                    counterContent.textContent = '';
+                } else {
+                    var countValue = formatCounterValue ? countFormat(count) : count;
+                    counterContent.textContent = countValue;
+                    counterElement.setAttribute('title', newTitle + ': ' + countValue);
+                }
+            } else {
+                if (counterZeroClass) {
+                    counterContent.classList.add(counterZeroClass);
+                } else {
+                    counterContent.style.display = 'none';
+                }
+                counterContent.textContent = emptyValue ? emptyValue : '';
+                counterElement.setAttribute('title', noNewTitle);
+                counterElement.setAttribute('href', linkForEmpty ? linkForEmpty : link);
+            }
+        });
+    };
+});

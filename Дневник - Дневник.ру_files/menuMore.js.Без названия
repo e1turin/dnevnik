@@ -1,0 +1,71 @@
+define('layoutcontrols/menuMore', function () {
+  'use strict';
+  var headerSubmenuElementSelector = '.header-submenu_active',
+    moreElementSelector = '.header-submenu.header-submenu_active .header-submenu__more-item';
+
+  var getAbsoluteWidth = function getAbsoluteHeight(element) {
+    var styles = window.getComputedStyle(element);
+        /* jshint sub:true*/
+    var margin = parseFloat(styles['marginLeft']) + parseFloat(styles['marginRight']);
+
+    return Math.ceil(element.offsetWidth + margin);
+  };
+
+  var createContainerBlock = function (children, moreContainerElement) {
+    var block = document.createElement('div');
+    block.classList.add('header-submenu__more-item-container');
+    var isAnyActiveInSubMenu = false;
+    [].forEach.call(children, function (element) {
+        if (element.classList.value && (element.classList.value.indexOf('active') !== -1)) {
+        isAnyActiveInSubMenu = true;
+      }
+      block.appendChild(element);
+    });
+
+    if (isAnyActiveInSubMenu) {
+      moreContainerElement.classList.add('header-submenu__more-item_active');
+    }
+
+    return block;
+  };
+
+  var moreElementIsEmpty = function (moreElement) {
+    return moreElement.children.length === 1 && moreElement.querySelector('.header-submenu__more-item-name');
+  };
+
+  var apply = function () {
+    var headerSubmenuElement = document.querySelector(headerSubmenuElementSelector),
+      moreContainerElement = document.querySelector(moreElementSelector);
+
+    if (!headerSubmenuElement || !moreContainerElement || !moreElementIsEmpty(moreContainerElement)) {
+      return;
+    }
+
+    var moreContainerWidth = getAbsoluteWidth(moreContainerElement),
+      maxAvailableWidth = getAbsoluteWidth(headerSubmenuElement) - moreContainerWidth;
+
+    if (headerSubmenuElement.childNodes && headerSubmenuElement.childNodes.length > 0) {
+      var filledWidth = 0;
+      var elementsForMove = [];
+
+      [].forEach.call(headerSubmenuElement.childNodes, function (element) {
+        filledWidth += getAbsoluteWidth(element);
+        if (filledWidth > maxAvailableWidth && element !== moreContainerElement) {
+          elementsForMove.push(element);
+        }
+      });
+
+      if (elementsForMove.length > 0) {
+        moreContainerElement.appendChild(createContainerBlock(elementsForMove, moreContainerElement));
+        headerSubmenuElement.style.overflow = 'visible';
+        moreContainerElement.style.visibility = 'visible';
+      } else if (moreElementIsEmpty(moreContainerElement)) {
+        moreContainerElement.style.display = 'none';
+      }
+    }
+  };
+
+  return {
+     apply: apply,
+  };
+});

@@ -1,0 +1,164 @@
+define('analyticsAppPopup', function () {
+    'use strict';
+
+    var popupBlock,
+        iframe,
+        rootElement,
+        popupArrowLeftClass = 'arrow-left',
+        popupArrowRightClass = 'arrow-right',
+        popupHorizontalAligmentOffset = 15,
+        popupVerticalAligmentOffset = 10,
+        popupWidth = 560,
+        popupHeight = 420;
+
+    var createIframeBlock = function () {
+        var popupBlock = document.querySelector('.analytics-app-popup');
+
+        if (!popupBlock) {
+            return;
+        }
+
+        var wrapper = document.createElement('div');
+        wrapper.classList.add('analytics-app-popup-iframe-wrapper');
+
+        iframe = document.createElement('iframe');
+        iframe.classList.add('analytics-app-popup-iframe');
+
+        wrapper.appendChild(iframe);
+        popupBlock.appendChild(wrapper);
+    };
+
+    var removeIframeBlock = function () {
+        var popupIframe = document.querySelector('.analytics-app-popup-iframe-wrapper');
+        if (popupIframe) {
+            popupIframe.parentNode.removeChild(popupIframe);
+        }
+    };
+
+    var showBlocks = function () {
+        popupBlock.style.display = 'block';
+    };
+
+    var hideBlocks = function () {
+        removeIframeBlock();
+        popupBlock.style.display = 'none';
+    };
+
+    var initPopupBlock = function () {
+        popupBlock = document.querySelector('.analytics-app-popup');
+
+        if (popupBlock) {
+            return;
+        }
+
+        popupBlock = document.createElement('div');
+        popupBlock.classList.add('analytics-app-popup');
+
+        rootElement.appendChild(popupBlock);
+    };
+
+    var getUrlParams = function (object) {
+        return Object.keys(object).map(function (key) {
+            return key + '=' + encodeURIComponent(object[key]);
+        }).join('&');
+    };
+
+    var showPopup = function (url, data) {
+        removeIframeBlock();
+        var params = getUrlParams(data);
+        createIframeBlock();
+        iframe.setAttribute('src', url + '&' + params);
+        showBlocks();
+    };
+
+    var setPopupPosition = function (mark) {
+        var rootBox = rootElement.getBoundingClientRect();
+        var markBox = mark.getBoundingClientRect();
+        var markXOffset = markBox.left - rootBox.left;
+        var markYOffset = markBox.top - rootBox.top;
+
+        var isRightOffset = Math.round(markXOffset) > Math.round(rootBox.width / 2);
+        var popupArrowClass = isRightOffset ? popupArrowRightClass : popupArrowLeftClass;
+
+        var popupLeft = isRightOffset ? Math.round(markXOffset - popupWidth + markBox.width) + popupHorizontalAligmentOffset
+                                      : Math.round(markXOffset) - popupHorizontalAligmentOffset;
+
+        var popupTop = Math.round(markYOffset - popupVerticalAligmentOffset - popupHeight);
+
+        popupBlock.classList.remove(popupArrowLeftClass);
+        popupBlock.classList.remove(popupArrowRightClass);
+        popupBlock.classList.add(popupArrowClass);
+
+        popupBlock.style.left = popupLeft + 'px';
+        popupBlock.style.top = popupTop + 'px';
+    };
+
+    var initHintBlock = function (markClass) {
+        var mark = document.querySelector('.' + markClass);
+        var hintBlock = document.querySelector('.analytics-popup-hint');
+        if (mark && hintBlock) {
+            hintBlock.style.display = 'block';
+        }
+    };
+
+    return {
+        init: function (model) {
+            rootElement = document.querySelector(model.rootElementSelector);
+            if (!rootElement) {
+                return;
+            }
+
+            initPopupBlock();
+            initHintBlock(model.markClass);
+
+            document.addEventListener('keydown', function (event) {
+                if (event.keyCode === 27) {
+                    hideBlocks();
+                }
+            });
+
+            document.addEventListener('click', function (event) {
+                var isClosestMarks = event.target.closest('.' + model.markClass);
+                var isClosestAppPopup = event.target.closest('.analytics-app-popup');
+
+                if (!isClosestAppPopup && !isClosestMarks) {
+                    hideBlocks();
+                    return;
+                }
+            });
+
+            rootElement.addEventListener('click', function (event) {
+                if (!event.target.classList.contains(model.markClass)) {
+                    return;
+                }
+
+                var data;
+                if (event.target.classList.contains(model.avgMarkClass)) {
+                    data = {
+                        usr_id: model.userId,
+                        type: 'avg_grade',
+                        person_id: model.personId,
+                        class_id: model.classId,
+                        period_id: model.periodId,
+                        subject_id: event.target.dataset.subjectid,
+                        from: event.target.dataset.fromdate,
+                        to: event.target.dataset.todate,
+                        avg_type: event.target.dataset.avgtype
+                    };
+                } else {
+                    data = {
+                        usr_id: model.userId,
+                        type: 'grade',
+                        person_id: model.personId,
+                        grade_id: event.target.dataset.id,
+                        work_id: event.target.dataset.work_id,
+                        num: event.target.dataset.num
+                    };
+                }
+
+                setPopupPosition(event.target);
+                showPopup(model.url, data);
+            });
+        }
+    };
+});

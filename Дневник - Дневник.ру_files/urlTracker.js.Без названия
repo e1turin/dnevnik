@@ -1,0 +1,63 @@
+define('analytics/urlTracker', ['analytics/analytics', 'analytics/google'], function () {
+    'use strict';
+
+    return function (model) {
+
+        var trackingConditions = model.trackingConditions;
+        var elementSelector = model.elementSelector;
+        var urlPrefix = model.urlPrefix;
+
+        var termsCheckBoxID = model.termsCheckBoxID;
+        var restrictedTrackingClass = model.restrictedTrackingClass;
+
+        var additionalConditions = function (element) {
+            if (termsCheckBoxID) {
+                var termsElement = document.getElementById(termsCheckBoxID);
+                if (!termsElement || termsElement.checked === false) {
+                    return false;
+                }
+            }
+
+            if (restrictedTrackingClass && element.classList.contains(restrictedTrackingClass)) {
+                return false;
+            }
+
+            return true;
+        };
+
+        var trackElement = function (element) {
+            if (element) {
+                var dataId = element.getAttribute('data-id');
+                if (additionalConditions(element)) {
+                    var pageView = dataId ? urlPrefix + dataId : urlPrefix;
+                    dnevnik.analytics.trackUrl({ pageView: pageView });
+                }
+            }
+        };
+
+        var simplyRunTracker = function () {
+            var element = document.querySelector(elementSelector);
+            trackElement(element);
+        };
+
+        var addEventListener = function (event) {
+            [].forEach.call(document.querySelectorAll(elementSelector), function (el) {
+                el.addEventListener(event, function () {
+                    trackElement(this);
+                });
+            });
+        };
+
+        if (trackingConditions) {
+            switch (trackingConditions) {
+                case 'simplyrun':
+                    simplyRunTracker();
+                break;
+
+                default:
+                    addEventListener(trackingConditions);
+                break;
+            }
+        }
+    };
+});

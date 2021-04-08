@@ -1,0 +1,26 @@
+define('common/adblockDummyInsert', ['common/dnevnik'], function () {
+    'use strict';
+
+    return function () {
+
+        var insertDummy = function () {
+            if (typeof useAdBlock !== 'undefined') {
+                return;
+            }
+
+            var dummy240X400Url = window && window.dnevnik && window.dnevnik.urls && window.dnevnik.urls.adblockDummyUrl ? window.dnevnik.urls.adblockDummyUrl : null;
+
+            var banner240X400Wrapper = document.querySelector('#content>div.col13 div.panel.bannerWrapper');
+
+            var insertAdblockDummies = function () {
+                if (banner240X400Wrapper && dummy240X400Url) {
+                    banner240X400Wrapper.style.background = 'url(' + dummy240X400Url + ')  no-repeat center';
+                }
+            };
+
+            insertAdblockDummies();
+        };
+
+        setTimeout(insertDummy, 1000);
+    };
+});

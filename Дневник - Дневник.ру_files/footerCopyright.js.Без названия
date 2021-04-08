@@ -1,0 +1,77 @@
+define('blocks/footerCopyright/footerCopyright', function () {
+      var trigger = document.querySelector('.page-footer__copyright-layout-details .page-footer__age-category');
+      var popup = document.querySelector('.page-footer__copyright-layout-details .page-footer__age-category-buble');
+      var hideDelayTimer;
+      var beingShown;
+      var isShown;
+
+      if (!trigger || !popup) {
+          return;
+      }
+
+      var startDisplay = function () {
+          var top = -100;
+          var opacity = 0;
+
+          popup.classList.add('page-footer__age-category-buble_active');
+
+          function displayPopup() {
+              if (top <= -110) {
+                  clearInterval(timerDisplay);
+                  isShown = false;
+              }
+              top = top - 1;
+              opacity = opacity + 0.1;
+
+              popup.style.top = top + 'px';
+              popup.style.opacity = opacity;
+          }
+
+          var timerDisplay = setInterval(displayPopup, 12);
+      };
+
+      var startHide = function () {
+          var top = -110;
+          var opacity = 1;
+          hideDelayTimer = null;
+          beingShown = true;
+
+          function hidePopup() {
+              if (top <= -120) {
+                  clearInterval(timerHide);
+                  popup.classList.remove('page-footer__age-category-buble_active');
+                  beingShown = false;
+                  isShown = true;
+              }
+
+              top = top - 1;
+              opacity = opacity - 0.1;
+
+              popup.style.top = top + 'px';
+              popup.style.opacity = opacity;
+          }
+
+          var timerHide = setInterval(hidePopup, 12);
+      };
+
+      trigger.addEventListener('mouseover', function () {
+          if (beingShown) {
+              return;
+          }
+
+          if (hideDelayTimer) {
+              clearTimeout(hideDelayTimer);
+              return;
+          }
+
+          startDisplay();
+      });
+
+      trigger.addEventListener('mouseout', function () {
+          if (beingShown || isShown) {
+              return;
+          }
+
+          hideDelayTimer = setTimeout(startHide, 1000);
+      });
+});

@@ -1,0 +1,24 @@
+﻿#headerAnonym1 h1, #headerAnonym1 h1 a { background-image: url(../../images/dnevnik-runet.jpg); }
+
+.lead .tabs li:nth-child(1) { background: #bc7ab5; width: 118px; }
+.lead .tabs li:nth-child(1):hover { width: 118px; }
+.lead .tabs li:nth-child(2) { background: #fa9000; width: 93px; }
+.lead .tabs li:nth-child(2):hover { width: 93px; }
+.lead .tabs li:nth-child(3) { background: #ffcd00; width: 112px; }
+.lead .tabs li:nth-child(3):hover { width: 112px; }
+.lead .tabs li:nth-child(4) { background: #c5d100; width: 130px; }
+.lead .tabs li:nth-child(4):hover { width: 130px; }
+.lead .tabs li:nth-child(5) { background: #2cc9ee; width: 119px; }
+.lead .tabs li:nth-child(5):hover { width: 119px; }
+
+.partner.eight{
+	width: 130px;
+}
+.col1 ol.terms li h3:before{
+	counter-increment:section;
+	content:"Раздел " counter(section) ". ";
+}
+.menu ul{
+	border-bottom-left-radius: 0;
+	border-top-left-radius: 0;
+}

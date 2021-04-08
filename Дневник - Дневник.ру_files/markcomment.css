@@ -1,0 +1,67 @@
+﻿.markcomment_holder
+{
+    display: none;
+}
+
+.markcomment
+{
+    border: solid 4px #4C98BC;
+    padding: 5px;
+    float: left;
+    font-size: 12px;
+}
+
+.markcomment .title
+{
+    font-weight: bold;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-size: 13px;
+}
+
+.markcomment textarea
+{
+    display: block;
+    width: 200px;
+    height: 100px;
+}
+
+.markcomment .hint
+{
+    color: #C0C0C0;
+    padding-top: 5px;
+    padding-bottom: 10px;
+    font-style: italic;
+}
+
+.markcomment button
+{
+    background: #76b9ea;
+    border: solid 1px #b8defa;
+    border-right-color: #5398cb;
+    border-bottom-color: #5398cb;
+    color: #fff;
+    float: left;
+    font-size: 13px;
+    padding: 2px 8px;
+    cursor: pointer;
+    width: 90px;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.markcomment button ~ button
+{
+    float: right;
+}
+
+.markcomment button:hover
+{
+    background: #f19720;
+}
+
+.wrongcomment
+{
+    border: 1px solid #ff0000;
+}

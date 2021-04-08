@@ -1,0 +1,9 @@
+* { background: #fff; }
+body { font-family: arial,helvetica,sans-serif; color: black; font-size:120%; }
+blockquote { font-style: italic; color: black; }
+a:link, a:visited { text-decoration:none; }
+
+#header, #footer, .tabs { display:none; }
+
+.grid { border-collapse:collapse; width:100%; }
+	.grid td { border:solid 1px #000; }

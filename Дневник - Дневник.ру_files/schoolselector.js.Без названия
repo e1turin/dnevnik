@@ -1,0 +1,19 @@
+﻿define(['common/dnevnik'], function () {
+    'use strict';
+
+    return function (model) {
+        var schoolSelector = document.querySelector('#chsc');
+
+        if (schoolSelector) {
+            schoolSelector.addEventListener('change', function (e) {
+                var url = this.selectedOptions[0].getAttribute('data-url');
+                if (url) {
+                    e.preventDefault();
+                    window.location.replace(url);
+                } else if (model.isAutoPostBack) {
+                    this.parentElement.submit();
+                }
+            });
+        }
+    };
+});

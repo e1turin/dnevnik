@@ -1,0 +1,115 @@
+define('yandexMetrika/yandexMetrikaCounter', function () {
+    'use strict';
+
+    (function (d, w, c) {
+
+        var ids = dnevnik.settings.yandexMetrikaIds;
+        var user = dnevnik.user;
+        var visitParams = dnevnik.visitParams;
+        var params;
+        var childrenAge;
+        var childrenSex;
+        var useAdBlock;
+
+        if (user) {
+            if (user.children) {
+                childrenAge = user.children.map(function (child) {
+                    return child.age;
+                });
+                childrenSex = user.children.map(function (child) {
+                    return child.sex;
+                });
+            }
+            if (typeof w.useAdBlock === 'undefined') {
+                useAdBlock = true;
+            } else {
+                useAdBlock = false;
+            }
+
+            params = {
+                params: {
+                    Authenticated: [
+                        'true', {
+                            User: [
+                                user.id, {
+                                    Sex: [
+                                        user.sex, {
+                                            Age: [
+                                                user.age, {
+                                                    Role: [
+                                                        user.role, {
+                                                            schoolId: [
+                                                                user.schools, {
+                                                                    childrenAge: [
+                                                                        childrenAge, {
+                                                                            childrenSex: [
+                                                                                childrenSex, {
+                                                                                    useAdBlock: useAdBlock
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    ActivityGroup: [user.group]
+                }
+            };
+
+        } else {
+            params = {
+                params: {
+                    Authenticated: 'false'
+                }
+            };
+        }
+
+        Object.keys(visitParams)
+            .forEach(function (k) {
+                if (visitParams[k]) {
+                    params[k] = visitParams[k];
+                }
+            });
+
+        var trackYaCounter = function (id) {
+            try {
+                w['yaCounter' + id] = new Ya.Metrika({
+                    id: id,
+                    clickmap: dnevnik.settings.yandexMetrikaСlickmapEnabled,
+                    trackLinks: true,
+                    accurateTrackBounce: true,
+                    params: params || {}
+                });
+            } catch (e) {
+            }
+        };
+
+        for (var k in ids) {
+            if (ids.hasOwnProperty(k)) {
+                (w[c] = w[c] || []).push(trackYaCounter.bind(this, ids[k]));
+            }
+        }
+
+        var n = d.getElementsByTagName('script')[0],
+            s = d.createElement('script'),
+            f = function () { n.parentNode.insertBefore(s, n); };
+        s.type = 'text/javascript';
+        s.async = true;
+        s.src = (d.location.protocol === 'https:' ? 'https:' : 'http:') + '//mc.yandex.ru/metrika/watch.js';
+
+        if (w.opera === '[object Opera]') {
+            d.addEventListener('DOMContentLoaded', f, false);
+        } else {
+            f();
+        }
+    })(document, window, 'yandex_metrika_callbacks');
+});

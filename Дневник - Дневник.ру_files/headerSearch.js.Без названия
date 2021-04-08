@@ -1,0 +1,28 @@
+define('blocks/headerSearch/headerSearch', function () {
+    'use strict';
+
+    return function () {
+        var searchButton = document.querySelector('.button_background-search'),
+            closeButton = document.querySelector('.button_background-close'),
+            searchInput = document.querySelector('.header-search__search-input'),
+            search = document.querySelector('.header-search__area');
+
+       document.addEventListener('click', function (e) {
+            if (e.target === searchButton) {
+                search.classList.remove('header-search__area_disable');
+                searchButton.classList.add('button_hide');
+            } else {
+
+                if (e.target === closeButton) {
+                    searchInput.value = '';
+                } else {
+                    if (e.target !== search && e.target !== searchInput) {
+                        search.classList.add('header-search__area_disable');
+                        searchButton.classList.remove('button_hide');
+                        searchInput.value = '';
+                    }
+                }
+            }
+        });
+    };
+});
